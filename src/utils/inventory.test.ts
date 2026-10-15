@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import type { InventoryFilters, PantryItem } from '../types';
-import { formatQuantity, getVisibleItems, isExpiringSoon, summarizeInventory } from './inventory';
+import {
+  formatQuantity,
+  getVisibleItems,
+  isExpiringSoon,
+  summarizeInventory,
+  isLowStock,
+} from './inventory';
 
 const items: PantryItem[] = [
   {
@@ -53,5 +59,11 @@ describe('утилиты для работы с запасами', () => {
   it('использует более крупную единицу измерения, когда это возможно', () => {
     expect(formatQuantity({ quantity: 1500, unit: 'g' })).toBe('1.5 кг');
     expect(formatQuantity({ quantity: 750, unit: 'ml' })).toBe('750 мл');
+  });
+
+  it('находит продукты, которые скоро закончатся, в том числе и на границе минимума', () => {
+    expect(isLowStock(items[0])).toBe(true);
+    expect(isLowStock(items[1])).toBe(false);
+    expect(isLowStock({ ...items[0], quantity: 300 })).toBe(true);
   });
 });
