@@ -7,11 +7,11 @@ import { InventoryToolbar } from './InventoryToolbar';
 const filters: InventoryFilters = { query: '', category: 'All', stock: 'all', sort: 'recent' };
 
 describe('InventoryToolbar', () => {
-  it('reports search changes to its parent', async () => {
+  it('передаёт изменение поискового запроса родительскому компоненту', async () => {
     const onChange = vi.fn();
     render(<InventoryToolbar filters={filters} onChange={onChange} />);
-    await userEvent.type(screen.getByRole('searchbox'), 'oats');
+    await userEvent.type(screen.getByRole('searchbox'), 'овсянка');
     expect(onChange).toHaveBeenCalled();
-    expect(onChange.mock.calls[0][0]).toEqual({ ...filters, query: 'o' });
+    expect(onChange.mock.calls[0][0]).toEqual({ ...filters, query: 'о' });
   });
 });

@@ -1,19 +1,19 @@
 # Pantry Pilot
 
-Pantry Pilot is a small household inventory app for keeping track of pantry staples, expiry dates, and the next shopping run. The team uses it internally as a lightweight React application and is preparing a public beta.
+Pantry Pilot — небольшое приложение для домашнего учёта продуктов, сроков годности и будущих покупок. Команда использует его как компактное React-приложение и готовит к открытой бета-версии.
 
-## Getting started
+## Как запустить проект
 
-Requirements: Node.js 20.19+ or 22.12+.
+Требования: Node.js 20.19+ или 22.12+.
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open the local address printed by Vite. The app starts with sample data. Browser storage is used after the first change.
+Откройте локальный адрес, который покажет Vite. При первом запуске приложение использует демонстрационные данные. После первого изменения данные сохраняются в браузере.
 
-## Useful commands
+## Полезные команды
 
 ```bash
 npm run typecheck
@@ -21,13 +21,14 @@ npm test
 npm run build
 ```
 
-## Product notes
+## Особенности продукта
 
-- Inventory changes are saved in the browser.
-- “Sync pantry” uses a local mock service, so it works without a backend.
-- The mock service occasionally rejects requests to exercise the same UI states as the staging API.
-- Dates are entered in the user's local calendar.
+- Изменения запасов сохраняются в браузере.
+- Кнопка «Синхронизировать» использует локальный имитатор сервиса, поэтому отдельный сервер не требуется.
+- Имитатор сервиса иногда отклоняет запросы, чтобы интерфейс обрабатывал те же состояния, что и тестовый API.
+- Даты вводятся по локальному календарю пользователя.
+- Заголовки CSV и внутренние значения категорий и единиц измерения остаются на английском — это часть формата обмена данными.
 
-## Team workflow
+## Рабочий процесс команды
 
-Pick one issue at a time, reproduce it before changing code, and keep the fix focused. Add a regression test when a bug can reasonably return unnoticed. Do not combine unrelated cleanup with a bug fix.
+Берите по одной задаче, воспроизводите проблему до изменения кода и не расширяйте исправление без необходимости. Если ошибка может незаметно вернуться, добавляйте регрессионный тест. Не объединяйте исправление бага с несвязанной уборкой кода.

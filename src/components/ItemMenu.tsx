@@ -12,10 +12,10 @@ export function ItemMenu({ item, anchor, onEdit, onDelete, onClose }: ItemMenuPr
   const rect = anchor.getBoundingClientRect();
   return (
     <>
-      <button className="menu-scrim" aria-label="Close menu" onClick={onClose} />
+      <button className="menu-scrim" aria-label="Закрыть меню" onClick={onClose} />
       <div className="item-menu" style={{ top: rect.bottom + 6, left: rect.right - 150 }}>
-        <button onClick={() => onEdit(item)}>Edit item</button>
-        <button className="danger-text" onClick={() => onDelete(item)}>Delete item</button>
+        <button onClick={() => onEdit(item)}>Изменить продукт</button>
+        <button className="danger-text" onClick={() => onDelete(item)}>Удалить продукт</button>
       </div>
     </>
   );

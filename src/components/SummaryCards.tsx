@@ -9,18 +9,18 @@ interface SummaryCardsProps {
 
 export function SummaryCards({ total, low, expiring, onSelect }: SummaryCardsProps) {
   return (
-    <section className="summary-grid" aria-label="Inventory summary">
+    <section className="summary-grid" aria-label="Сводка по запасам">
       <button className="summary-card" onClick={() => onSelect('all')}>
         <span className="summary-icon green"><PackageOpen size={20} /></span>
-        <span><strong>{total}</strong><small>Items tracked</small></span>
+        <span><strong>{total}</strong><small>Всего продуктов</small></span>
       </button>
       <button className="summary-card" onClick={() => onSelect('low')}>
         <span className="summary-icon orange"><AlertTriangle size={20} /></span>
-        <span><strong>{low}</strong><small>Running low</small></span>
+        <span><strong>{low}</strong><small>Заканчиваются</small></span>
       </button>
       <button className="summary-card" onClick={() => onSelect('expiring')}>
         <span className="summary-icon blue"><Timer size={20} /></span>
-        <span><strong>{expiring}</strong><small>Expiring soon</small></span>
+        <span><strong>{expiring}</strong><small>Скоро испортятся</small></span>
       </button>
     </section>
   );

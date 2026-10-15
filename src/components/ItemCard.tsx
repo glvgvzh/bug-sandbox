@@ -1,6 +1,7 @@
 import { CalendarDays, Heart, MoreHorizontal } from 'lucide-react';
 import type { PantryItem } from '../types';
 import { daysUntilExpiry, formatQuantity, isLowStock } from '../utils/inventory';
+import { categoryLabels } from '../utils/labels';
 
 interface ItemCardProps {
   item: PantryItem;
@@ -11,10 +12,10 @@ interface ItemCardProps {
 
 function expiryLabel(item: PantryItem) {
   const days = daysUntilExpiry(item);
-  if (days === null) return 'No expiry date';
-  if (days < 0) return `Expired ${Math.abs(days)}d ago`;
-  if (days === 0) return 'Expires today';
-  return `Expires in ${days}d`;
+  if (days === null) return 'Срок годности не указан';
+  if (days < 0) return `Просрочено на ${Math.abs(days)} дн.`;
+  if (days === 0) return 'Срок годности истекает сегодня';
+  return `До окончания срока: ${days} дн.`;
 }
 
 export function ItemCard({ item, onOpen, onFavorite, onMenu }: ItemCardProps) {
@@ -25,18 +26,18 @@ export function ItemCard({ item, onOpen, onFavorite, onMenu }: ItemCardProps) {
   return (
     <article className="item-card" tabIndex={0} onClick={() => onOpen(item)}>
       <div className="card-topline">
-        <span className="category-pill">{item.category}</span>
+        <span className="category-pill">{categoryLabels[item.category]}</span>
         <div className="card-buttons">
           <button
             className={`icon-button favorite-button ${item.favorite ? 'active' : ''}`}
-            aria-label={item.favorite ? `Remove ${item.name} from favorites` : `Add ${item.name} to favorites`}
+            aria-label={item.favorite ? `Удалить ${item.name} из избранного` : `Добавить ${item.name} в избранное`}
             onClick={() => onFavorite(item.id)}
           >
             <Heart size={17} fill={item.favorite ? 'currentColor' : 'none'} />
           </button>
           <button
             className="icon-button"
-            aria-label={`Actions for ${item.name}`}
+            aria-label={`Действия с продуктом ${item.name}`}
             onClick={(event) => onMenu(item, event.currentTarget)}
           >
             <MoreHorizontal size={19} />
@@ -46,7 +47,7 @@ export function ItemCard({ item, onOpen, onFavorite, onMenu }: ItemCardProps) {
       <h3>{item.name}</h3>
       <div className="quantity-line">
         <strong>{formatQuantity(item)}</strong>
-        {low && <span className="low-badge">Low stock</span>}
+        {low && <span className="low-badge">Заканчивается</span>}
       </div>
       <div className={`expiry-line ${expiryTone}`}>
         <CalendarDays size={16} />

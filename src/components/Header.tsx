@@ -16,20 +16,20 @@ export function Header({ isSyncing, syncError, lastSyncedAt, onAdd, onSync, onIm
         <div className="brand-mark" aria-hidden="true">P</div>
         <div>
           <h1>Pantry Pilot</h1>
-          <p>Know what you have. Buy what you need.</p>
+          <p>Знайте, что есть дома. Покупайте только нужное.</p>
         </div>
       </div>
       <div className="header-actions">
         <div className={`sync-status ${syncError ? 'has-error' : ''}`} title={syncError ?? undefined}>
           {syncError ? <CloudOff size={16} /> : <Cloud size={16} />}
-          <span>{syncError ? 'Sync issue' : lastSyncedAt ? 'Synced just now' : 'Stored locally'}</span>
+          <span>{syncError ? 'Ошибка синхронизации' : lastSyncedAt ? 'Только что синхронизировано' : 'Сохранено на устройстве'}</span>
         </div>
-        <button className="button button-ghost" onClick={onImport}>Import CSV</button>
+        <button className="button button-ghost" onClick={onImport}>Импорт CSV</button>
         <button className="button button-secondary" onClick={onSync} disabled={isSyncing}>
-          {isSyncing ? 'Syncing…' : 'Sync pantry'}
+          {isSyncing ? 'Синхронизация…' : 'Синхронизировать'}
         </button>
         <button className="button button-primary" onClick={onAdd}>
-          <Plus size={17} /> Add item
+          <Plus size={17} /> Добавить продукт
         </button>
       </div>
     </header>

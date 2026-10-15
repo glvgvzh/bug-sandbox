@@ -64,7 +64,7 @@ export function useInventory() {
       setLastSyncedAt(result.syncedAt);
       setSyncError(null);
     } catch (error) {
-      setSyncError(error instanceof Error ? error.message : 'Sync failed');
+      setSyncError(error instanceof Error ? error.message : 'Не удалось синхронизировать запасы');
     } finally {
       setIsSyncing(false);
     }

@@ -1,5 +1,6 @@
 import { differenceInCalendarDays, parseISO } from 'date-fns';
 import type { InventoryFilters, PantryItem } from '../types';
+import { unitLabels } from './labels';
 
 export function isLowStock(item: PantryItem) {
   return item.quantity < item.lowStockAt;
@@ -37,9 +38,9 @@ export function getVisibleItems(items: PantryItem[], filters: InventoryFilters, 
 }
 
 export function formatQuantity(item: Pick<PantryItem, 'quantity' | 'unit'>) {
-  if (item.unit === 'g' && item.quantity >= 1000) return `${item.quantity / 1000} kg`;
-  if (item.unit === 'ml' && item.quantity >= 1000) return `${item.quantity / 1000} l`;
-  return `${item.quantity} ${item.unit}`;
+  if (item.unit === 'g' && item.quantity >= 1000) return `${item.quantity / 1000} кг`;
+  if (item.unit === 'ml' && item.quantity >= 1000) return `${item.quantity / 1000} л`;
+  return `${item.quantity} ${unitLabels[item.unit]}`;
 }
 
 export function summarizeInventory(items: PantryItem[], today = new Date()) {

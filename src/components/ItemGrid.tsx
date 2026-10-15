@@ -14,14 +14,14 @@ export function ItemGrid({ items, onOpen, onFavorite, onMenu }: ItemGridProps) {
     return (
       <div className="empty-state">
         <PackageSearch size={34} />
-        <h2>No pantry items found</h2>
-        <p>Try changing the search or filters.</p>
+        <h2>Продукты не найдены</h2>
+        <p>Попробуйте изменить поисковый запрос или фильтры.</p>
       </div>
     );
   }
 
   return (
-    <section className="item-grid" aria-label="Pantry items">
+    <section className="item-grid" aria-label="Продукты в кладовой">
       {items.map((item) => (
         <ItemCard key={item.id} item={item} onOpen={onOpen} onFavorite={onFavorite} onMenu={onMenu} />
       ))}

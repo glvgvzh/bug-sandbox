@@ -40,10 +40,10 @@ export function App() {
   function saveItem(draft: ItemDraft) {
     if (editingItem) {
       inventory.updateItem(editingItem.id, draft);
-      setToast({ message: `${draft.name} updated` });
+      setToast({ message: `${draft.name}: изменения сохранены` });
     } else {
       inventory.addItem(draft);
-      setToast({ message: `${draft.name} added` });
+      setToast({ message: `${draft.name}: продукт добавлен` });
     }
   }
 
@@ -51,9 +51,9 @@ export function App() {
     setMenu(null);
     try {
       await inventory.deleteItem(item.id);
-      setToast({ message: `${item.name} deleted` });
+      setToast({ message: `${item.name}: продукт удалён` });
     } catch {
-      setToast({ message: `Could not delete ${item.name}`, tone: 'error' });
+      setToast({ message: `Не удалось удалить ${item.name}`, tone: 'error' });
     }
   }
 
@@ -69,8 +69,8 @@ export function App() {
       />
       <main>
         <div className="page-intro">
-          <div><p className="eyebrow">Home inventory</p><h2>Your pantry</h2></div>
-          <p>Keep an eye on everyday essentials before the next grocery run.</p>
+          <div><p className="eyebrow">Домашние запасы</p><h2>Ваша кладовая</h2></div>
+          <p>Следите за запасами продуктов и вовремя пополняйте их.</p>
         </div>
         <SummaryCards
           {...inventory.summary}
