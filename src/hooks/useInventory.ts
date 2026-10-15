@@ -38,7 +38,7 @@ export function useInventory() {
           ? {
               ...item,
               ...draft,
-              quantity: draft.quantity || item.quantity,
+              quantity: draft.quantity,
               updatedAt: new Date().toISOString(),
             }
           : item,
