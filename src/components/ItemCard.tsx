@@ -28,7 +28,7 @@ export function ItemCard({ item, onOpen, onFavorite, onMenu }: ItemCardProps) {
     <article className="item-card" tabIndex={0} onClick={() => onOpen(item)}>
       <div className="card-topline">
         <span className="category-pill">{categoryLabels[item.category]}</span>
-        <div className="card-buttons">
+        <div className="card-buttons" onClick={(e) => e.stopPropagation()}>
           <button
             className={`icon-button favorite-button ${item.favorite ? 'active' : ''}`}
             aria-label={
