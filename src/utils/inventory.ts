@@ -3,7 +3,7 @@ import type { InventoryFilters, PantryItem } from '../types';
 import { unitLabels } from './labels';
 
 export function isLowStock(item: PantryItem) {
-  return item.quantity < item.lowStockAt;
+  return item.quantity <= item.lowStockAt;
 }
 
 export function daysUntilExpiry(item: PantryItem, today = new Date()) {
