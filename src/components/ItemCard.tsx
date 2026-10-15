@@ -21,7 +21,8 @@ function expiryLabel(item: PantryItem) {
 export function ItemCard({ item, onOpen, onFavorite, onMenu }: ItemCardProps) {
   const low = isLowStock(item);
   const expiry = daysUntilExpiry(item);
-  const expiryTone = expiry !== null && expiry <= 3 ? 'danger' : expiry !== null && expiry <= 7 ? 'warning' : '';
+  const expiryTone =
+    expiry !== null && expiry <= 3 ? 'danger' : expiry !== null && expiry <= 7 ? 'warning' : '';
 
   return (
     <article className="item-card" tabIndex={0} onClick={() => onOpen(item)}>
@@ -30,7 +31,11 @@ export function ItemCard({ item, onOpen, onFavorite, onMenu }: ItemCardProps) {
         <div className="card-buttons">
           <button
             className={`icon-button favorite-button ${item.favorite ? 'active' : ''}`}
-            aria-label={item.favorite ? `Удалить ${item.name} из избранного` : `Добавить ${item.name} в избранное`}
+            aria-label={
+              item.favorite
+                ? `Удалить ${item.name} из избранного`
+                : `Добавить ${item.name} в избранное`
+            }
             onClick={() => onFavorite(item.id)}
           >
             <Heart size={17} fill={item.favorite ? 'currentColor' : 'none'} />

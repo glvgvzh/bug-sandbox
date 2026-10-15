@@ -11,16 +11,31 @@ export function SummaryCards({ total, low, expiring, onSelect }: SummaryCardsPro
   return (
     <section className="summary-grid" aria-label="Сводка по запасам">
       <button className="summary-card" onClick={() => onSelect('all')}>
-        <span className="summary-icon green"><PackageOpen size={20} /></span>
-        <span><strong>{total}</strong><small>Всего продуктов</small></span>
+        <span className="summary-icon green">
+          <PackageOpen size={20} />
+        </span>
+        <span>
+          <strong>{total}</strong>
+          <small>Всего продуктов</small>
+        </span>
       </button>
       <button className="summary-card" onClick={() => onSelect('low')}>
-        <span className="summary-icon orange"><AlertTriangle size={20} /></span>
-        <span><strong>{low}</strong><small>Заканчиваются</small></span>
+        <span className="summary-icon orange">
+          <AlertTriangle size={20} />
+        </span>
+        <span>
+          <strong>{low}</strong>
+          <small>Заканчиваются</small>
+        </span>
       </button>
       <button className="summary-card" onClick={() => onSelect('expiring')}>
-        <span className="summary-icon blue"><Timer size={20} /></span>
-        <span><strong>{expiring}</strong><small>Скоро испортятся</small></span>
+        <span className="summary-icon blue">
+          <Timer size={20} />
+        </span>
+        <span>
+          <strong>{expiring}</strong>
+          <small>Скоро испортятся</small>
+        </span>
       </button>
     </section>
   );

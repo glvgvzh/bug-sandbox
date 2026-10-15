@@ -8,7 +8,9 @@ export function Toast({ message, tone = 'success', onClose }: ToastProps) {
   return (
     <div className={`toast ${tone}`} role="status">
       <span>{message}</span>
-      <button onClick={onClose} aria-label="Закрыть уведомление">×</button>
+      <button onClick={onClose} aria-label="Закрыть уведомление">
+        ×
+      </button>
     </div>
   );
 }

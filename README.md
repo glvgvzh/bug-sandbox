@@ -19,7 +19,11 @@ npm run dev
 npm run typecheck
 npm test
 npm run build
+npm run lint
+npm run format:check
 ```
+
+Команда `npm run check` последовательно проверяет форматирование, ESLint, типы и тесты. Подробный рабочий процесс описан в [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Особенности продукта
 

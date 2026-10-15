@@ -32,17 +32,28 @@ export function useInventory() {
   }
 
   function updateItem(id: string, draft: ItemDraft) {
-    setItems((current) => current.map((item) => item.id === id
-      ? { ...item, ...draft, quantity: draft.quantity || item.quantity, updatedAt: new Date().toISOString() }
-      : item));
+    setItems((current) =>
+      current.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              ...draft,
+              quantity: draft.quantity || item.quantity,
+              updatedAt: new Date().toISOString(),
+            }
+          : item,
+      ),
+    );
   }
 
   function toggleFavorite(id: string) {
     const item = items.find((candidate) => candidate.id === id);
     if (!item) return;
-    setItems(items.map((candidate) => candidate.id === id
-      ? { ...candidate, favorite: !item.favorite }
-      : candidate));
+    setItems(
+      items.map((candidate) =>
+        candidate.id === id ? { ...candidate, favorite: !item.favorite } : candidate,
+      ),
+    );
   }
 
   async function deleteItem(id: string) {

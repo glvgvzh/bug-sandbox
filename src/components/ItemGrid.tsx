@@ -23,7 +23,13 @@ export function ItemGrid({ items, onOpen, onFavorite, onMenu }: ItemGridProps) {
   return (
     <section className="item-grid" aria-label="Продукты в кладовой">
       {items.map((item) => (
-        <ItemCard key={item.id} item={item} onOpen={onOpen} onFavorite={onFavorite} onMenu={onMenu} />
+        <ItemCard
+          key={item.id}
+          item={item}
+          onOpen={onOpen}
+          onFavorite={onFavorite}
+          onMenu={onMenu}
+        />
       ))}
     </section>
   );

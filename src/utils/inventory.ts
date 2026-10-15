@@ -16,7 +16,11 @@ export function isExpiringSoon(item: PantryItem, today = new Date()) {
   return days !== null && days >= 0 && days <= 7;
 }
 
-export function getVisibleItems(items: PantryItem[], filters: InventoryFilters, today = new Date()) {
+export function getVisibleItems(
+  items: PantryItem[],
+  filters: InventoryFilters,
+  today = new Date(),
+) {
   const query = filters.query.toLowerCase();
   const visible = items.filter((item) => {
     const matchesQuery = item.name.toLowerCase().includes(query);

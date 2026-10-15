@@ -10,8 +10,14 @@ import { Toast } from './components/Toast';
 import { useInventory } from './hooks/useInventory';
 import type { ItemDraft, PantryItem } from './types';
 
-interface MenuState { item: PantryItem; anchor: HTMLElement }
-interface ToastState { message: string; tone?: 'success' | 'error' }
+interface MenuState {
+  item: PantryItem;
+  anchor: HTMLElement;
+}
+interface ToastState {
+  message: string;
+  tone?: 'success' | 'error';
+}
 
 export function App() {
   const inventory = useInventory();
@@ -69,7 +75,10 @@ export function App() {
       />
       <main>
         <div className="page-intro">
-          <div><p className="eyebrow">Домашние запасы</p><h2>Ваша кладовая</h2></div>
+          <div>
+            <p className="eyebrow">Домашние запасы</p>
+            <h2>Ваша кладовая</h2>
+          </div>
           <p>Следите за запасами продуктов и вовремя пополняйте их.</p>
         </div>
         <SummaryCards
@@ -86,14 +95,19 @@ export function App() {
       </main>
 
       {formOpen && (
-        <ItemFormModal
-          item={editingItem}
-          onClose={() => setFormOpen(false)}
-          onSave={saveItem}
+        <ItemFormModal item={editingItem} onClose={() => setFormOpen(false)} onSave={saveItem} />
+      )}
+      {importOpen && (
+        <ImportModal onClose={() => setImportOpen(false)} onImport={inventory.importItems} />
+      )}
+      {menu && (
+        <ItemMenu
+          {...menu}
+          onEdit={openEditForm}
+          onDelete={(item) => void deleteItem(item)}
+          onClose={() => setMenu(null)}
         />
       )}
-      {importOpen && <ImportModal onClose={() => setImportOpen(false)} onImport={inventory.importItems} />}
-      {menu && <ItemMenu {...menu} onEdit={openEditForm} onDelete={(item) => void deleteItem(item)} onClose={() => setMenu(null)} />}
       {toast && <Toast {...toast} onClose={() => setToast(null)} />}
     </div>
   );

@@ -3,7 +3,13 @@ import type { ItemDraft } from '../types';
 import { validateDraft } from './validation';
 
 const validDraft: ItemDraft = {
-  name: 'Макароны', category: 'Grains', quantity: 2, unit: 'pcs', lowStockAt: 1, expiresAt: null, favorite: false,
+  name: 'Макароны',
+  category: 'Grains',
+  quantity: 2,
+  unit: 'pcs',
+  lowStockAt: 1,
+  expiresAt: null,
+  favorite: false,
 };
 
 describe('validateDraft', () => {
