@@ -37,7 +37,10 @@ export function getVisibleItems(
   return visible.sort((a, b) => {
     if (filters.sort === 'name') return a.name.localeCompare(b.name);
     if (filters.sort === 'recent') return b.updatedAt.localeCompare(a.updatedAt);
-    return (a.expiresAt ?? '').localeCompare(b.expiresAt ?? '');
+    if (a.expiresAt === null || b.expiresAt === null) {
+      return Number(a.expiresAt === null) - Number(b.expiresAt === null);
+    }
+    return a.expiresAt.localeCompare(b.expiresAt);
   });
 }
 

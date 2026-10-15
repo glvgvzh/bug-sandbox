@@ -43,6 +43,13 @@ describe('утилиты для работы с запасами', () => {
     ).toEqual(['Персики']);
   });
 
+  it('сортирует продукты по сроку годности, отправляя продукты без срока в конец списка', () => {
+    const itemWithoutExp = { ...items[0], id: '3', expiresAt: null };
+    expect(
+      getVisibleItems([itemWithoutExp, ...items], { ...filters, sort: 'expiry' }, today),
+    ).toStrictEqual([{ ...items[0] }, { ...items[1] }, itemWithoutExp]);
+  });
+
   it('выполняет поиск без учёта регистра', () => {
     expect(getVisibleItems(items, { ...filters, query: 'ПЕР' }, today)).toHaveLength(1);
   });
