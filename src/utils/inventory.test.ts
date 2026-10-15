@@ -47,6 +47,12 @@ describe('утилиты для работы с запасами', () => {
     expect(getVisibleItems(items, { ...filters, query: 'ПЕР' }, today)).toHaveLength(1);
   });
 
+  it('лишние внешние пробелы не влияют на результаты поиска', () => {
+    expect(getVisibleItems(items, { ...filters, query: '   Персики   ' }, today)).toStrictEqual([
+      items[1],
+    ]);
+  });
+
   it('находит продукт со сроком годности в ближайшие семь дней', () => {
     expect(isExpiringSoon(items[0], today)).toBe(true);
     expect(isExpiringSoon(items[1], today)).toBe(false);
