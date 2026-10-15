@@ -21,7 +21,7 @@ export function getVisibleItems(
   filters: InventoryFilters,
   today = new Date(),
 ) {
-  const query = filters.query.toLowerCase();
+  const query = filters.query.toLowerCase().trim();
   const visible = items.filter((item) => {
     const matchesQuery = item.name.toLowerCase().includes(query);
     const matchesCategory = filters.category === 'All' || item.category === filters.category;
