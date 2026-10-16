@@ -29,7 +29,8 @@ export function App() {
 
   useEffect(() => {
     if (!toast) return;
-    window.setTimeout(() => setToast(null), 3000);
+    const timer = window.setTimeout(() => setToast(null), 3000);
+    return () => window.clearTimeout(timer);
   }, [toast]);
 
   function openAddForm() {
