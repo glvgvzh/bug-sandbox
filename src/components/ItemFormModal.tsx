@@ -41,7 +41,7 @@ export function ItemFormModal({ item, onClose, onSave }: ItemFormModalProps) {
       if (event.key === 'Escape') onClose();
     }
     window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keyup', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
   }, [onClose]);
 
   function submit(event: FormEvent) {
