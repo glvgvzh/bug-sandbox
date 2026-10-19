@@ -100,4 +100,33 @@ describe('useInventory', () => {
     expect(result.current.items).toHaveLength(seedItems.length);
     expect(result.current.items.filter((item) => item.id === deleteId)).toHaveLength(1);
   });
+
+  it('не теряет быстрые переключения избранного у разных продуктов', () => {
+    const firstItem = seedItems[4];
+    const secondItem = seedItems[5];
+    const { result } = renderHook(() => useInventory());
+    act(() => {
+      result.current.toggleFavorite(firstItem.id);
+      result.current.toggleFavorite(secondItem.id);
+    });
+
+    const firstItemResult = result.current.items.find((item) => item.id === firstItem.id);
+    const secondItemResult = result.current.items.find((item) => item.id === secondItem.id);
+
+    expect(firstItemResult?.favorite).toBe(true);
+    expect(secondItemResult?.favorite).toBe(true);
+  });
+
+  it('два быстрых переключения возвращают исходный статус', () => {
+    const testItem = seedItems[4];
+    const { result } = renderHook(() => useInventory());
+    act(() => {
+      result.current.toggleFavorite(testItem.id);
+      result.current.toggleFavorite(testItem.id);
+    });
+
+    const itemResult = result.current.items.find((item) => item.id === testItem.id);
+
+    expect(itemResult?.favorite).toBe(false);
+  });
 });

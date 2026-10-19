@@ -47,13 +47,13 @@ export function useInventory() {
   }
 
   function toggleFavorite(id: string) {
-    const item = items.find((candidate) => candidate.id === id);
-    if (!item) return;
-    setItems(
-      items.map((candidate) =>
-        candidate.id === id ? { ...candidate, favorite: !item.favorite } : candidate,
-      ),
-    );
+    setItems((prev) => {
+      const prevItem = prev.find((candidate) => candidate.id === id);
+      if (!prevItem) return prev;
+      return prev.map((candidate) =>
+        candidate.id === id ? { ...candidate, favorite: !prevItem.favorite } : candidate,
+      );
+    });
   }
 
   async function deleteItem(id: string) {
