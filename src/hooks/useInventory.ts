@@ -57,12 +57,20 @@ export function useInventory() {
   }
 
   async function deleteItem(id: string) {
-    const previousItems = items;
+    const itemToDelete = items.find((item) => item.id === id);
+    if (!itemToDelete) {
+      return;
+    }
     setItems((current) => current.filter((item) => item.id !== id));
     try {
       await removePantryItem(id);
     } catch (error) {
-      setItems([...previousItems]);
+      setItems((prev) => {
+        if (!prev.find((item) => item.id === itemToDelete.id)) {
+          return [...prev, itemToDelete];
+        }
+        return prev;
+      });
       throw error;
     }
   }
