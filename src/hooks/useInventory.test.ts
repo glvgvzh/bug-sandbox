@@ -4,6 +4,7 @@ import { renderHook } from '@testing-library/react';
 import { seedItems } from '../data/seed';
 import { act } from 'react';
 import { removePantryItem, syncPantry } from '../services/pantryApi';
+import type { ItemDraft, PantryItem, SyncResult } from '../types';
 
 vi.mock('../services/pantryApi', () => ({
   removePantryItem: vi.fn(),
@@ -128,5 +129,103 @@ describe('useInventory', () => {
     const itemResult = result.current.items.find((item) => item.id === testItem.id);
 
     expect(itemResult?.favorite).toBe(false);
+  });
+
+  it('синхронизация не стирает изменения, сделанные во время запроса добавления продукта', async () => {
+    const newItemDraft: ItemDraft = {
+      name: 'test',
+      category: 'Other',
+      quantity: 1,
+      unit: 'kg',
+      lowStockAt: 1,
+      expiresAt: null,
+      favorite: false,
+    };
+    const { result } = renderHook(() => useInventory());
+    let resolveRequest: (value: SyncResult) => void = () => {};
+    vi.mocked(syncPantry).mockImplementation(() => {
+      return new Promise((resolve) => {
+        resolveRequest = resolve;
+      });
+    });
+    let syncResult;
+
+    act(() => {
+      syncResult = result.current.sync();
+    });
+    await act(async () => {
+      result.current.addItem(newItemDraft);
+    });
+    await act(async () => {
+      resolveRequest({
+        items: seedItems.map((item) => ({ ...item, name: item.name.trim() })),
+        syncedAt: new Date().toISOString(),
+      });
+    });
+    await syncResult;
+
+    expect(result.current.items).toHaveLength(seedItems.length + 1);
+    expect(result.current.items.filter((item) => item.name === newItemDraft.name)).toHaveLength(1);
+  });
+
+  it('после завершения синхронизации сохраняется локально изменённая версия продукта, а неизменённый продукт принимает серверную версию', async () => {
+    const testItems: PantryItem[] = [
+      {
+        id: 'item-oats',
+        name: 'Овсяные хлопья',
+        category: 'Grains',
+        quantity: 650,
+        unit: 'g',
+        lowStockAt: 300,
+        expiresAt: '2027-03-18',
+        favorite: true,
+        updatedAt: '2026-10-09T08:30:00.000Z',
+      },
+      {
+        id: 'item-tomatoes',
+        name: '   Помидоры черри   ',
+        category: 'Produce',
+        quantity: 8,
+        unit: 'pcs',
+        lowStockAt: 4,
+        expiresAt: '2026-10-18',
+        favorite: false,
+        updatedAt: '2026-10-13T17:05:00.000Z',
+      },
+    ];
+    localStorage.setItem('pantry-pilot:items', JSON.stringify(testItems));
+    const itemDraft: ItemDraft = { ...testItems[0], name: 'testName' };
+
+    const { result } = renderHook(() => useInventory());
+    let resolveRequest: (value: SyncResult) => void = () => {};
+    vi.mocked(syncPantry).mockImplementation(() => {
+      return new Promise((resolve) => {
+        resolveRequest = resolve;
+      });
+    });
+    let syncResult;
+
+    act(() => {
+      syncResult = result.current.sync();
+    });
+    await act(async () => {
+      result.current.updateItem(testItems[0].id, itemDraft);
+    });
+    await act(async () => {
+      resolveRequest({
+        items: testItems.map((item) => ({ ...item, name: item.name.trim() })),
+        syncedAt: new Date().toISOString(),
+      });
+    });
+    await syncResult;
+
+    const resultItem = result.current.items.filter((item) => item.id === testItems[0].id);
+    expect(resultItem).toHaveLength(1);
+    expect(resultItem[0].name).toBe(itemDraft.name);
+    expect(resultItem[0].updatedAt).toBe(fakeDate.toISOString());
+
+    const unchangedItem = result.current.items.filter((item) => item.id === testItems[1].id);
+    expect(unchangedItem).toHaveLength(1);
+    expect(unchangedItem[0]).toStrictEqual({ ...testItems[1], name: 'Помидоры черри' });
   });
 });
