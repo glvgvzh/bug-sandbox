@@ -79,7 +79,13 @@ export function useInventory() {
     setIsSyncing(true);
     try {
       const result = await syncPantry(items);
-      setItems(result.items);
+      setItems((currentItems) =>
+        currentItems.map((currentItem) => {
+          const syncedItem = result.items.find((resultItem) => resultItem.id === currentItem.id);
+          if (!syncedItem) return currentItem;
+          return currentItem.updatedAt > syncedItem.updatedAt ? currentItem : syncedItem;
+        }),
+      );
       setLastSyncedAt(result.syncedAt);
       setSyncError(null);
     } catch (error) {
