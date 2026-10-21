@@ -228,4 +228,170 @@ describe('useInventory', () => {
     expect(unchangedItem).toHaveLength(1);
     expect(unchangedItem[0]).toStrictEqual({ ...testItems[1], name: 'Помидоры черри' });
   });
+
+  it('более старый ответ синхронизации не перезаписывает результат нового', async () => {
+    const testItems: PantryItem[] = [
+      {
+        id: 'item-oats',
+        name: 'Овсяные хлопья',
+        category: 'Grains',
+        quantity: 650,
+        unit: 'g',
+        lowStockAt: 300,
+        expiresAt: '2027-03-18',
+        favorite: true,
+        updatedAt: '2026-10-09T08:30:00.000Z',
+      },
+      {
+        id: 'item-tomatoes',
+        name: '   Помидоры черри   ',
+        category: 'Produce',
+        quantity: 8,
+        unit: 'pcs',
+        lowStockAt: 4,
+        expiresAt: '2026-10-18',
+        favorite: false,
+        updatedAt: '2026-10-13T17:05:00.000Z',
+      },
+    ];
+    localStorage.setItem('pantry-pilot:items', JSON.stringify(testItems));
+    const { result } = renderHook(() => useInventory());
+
+    let resolveFirstRequest: (value: SyncResult) => void = () => {};
+    let resolveSecondRequest: (value: SyncResult) => void = () => {};
+    vi.mocked(syncPantry)
+      .mockImplementationOnce(() => {
+        return new Promise((resolve) => {
+          resolveFirstRequest = resolve;
+        });
+      })
+      .mockImplementationOnce(() => {
+        return new Promise((resolve) => {
+          resolveSecondRequest = resolve;
+        });
+      });
+    let firstSyncResult: Promise<void>;
+    let secondSyncResult: Promise<void>;
+
+    act(() => {
+      firstSyncResult = result.current.sync();
+      secondSyncResult = result.current.sync();
+    });
+    expect(result.current.isSyncing).toBe(true);
+    expect(syncPantry).toHaveBeenCalledTimes(2);
+
+    const firstSyncedAt = '2026-10-21T10:00:00.000Z';
+    const secondSyncedAt = '2026-10-21T10:01:00.000Z';
+
+    await act(async () => {
+      resolveSecondRequest({
+        items: [{ ...testItems[0], name: 'Новый результат' }, testItems[1]],
+        syncedAt: secondSyncedAt,
+      });
+      await secondSyncResult;
+    });
+
+    expect(result.current.lastSyncedAt).toBe(secondSyncedAt);
+    expect(result.current.items[0].name).toBe('Новый результат');
+
+    await act(async () => {
+      resolveFirstRequest({
+        items: [{ ...testItems[0], name: 'Старый результат' }, testItems[1]],
+        syncedAt: firstSyncedAt,
+      });
+      await firstSyncResult;
+    });
+
+    expect(result.current.lastSyncedAt).toBe(secondSyncedAt);
+    expect(result.current.items[0].name).toBe('Новый результат');
+  });
+
+  it('завершение старого запроса не выключает индикатор новой синхронизации', async () => {
+    const { result } = renderHook(() => useInventory());
+
+    let resolveFirstRequest: (value: SyncResult) => void = () => {};
+    let resolveSecondRequest: (value: SyncResult) => void = () => {};
+    vi.mocked(syncPantry)
+      .mockImplementationOnce(() => {
+        return new Promise((resolve) => {
+          resolveFirstRequest = resolve;
+        });
+      })
+      .mockImplementationOnce(() => {
+        return new Promise((resolve) => {
+          resolveSecondRequest = resolve;
+        });
+      });
+    let firstSyncResult: Promise<void>;
+    let secondSyncResult: Promise<void>;
+
+    act(() => {
+      firstSyncResult = result.current.sync();
+      secondSyncResult = result.current.sync();
+    });
+    expect(result.current.isSyncing).toBe(true);
+    expect(syncPantry).toHaveBeenCalledTimes(2);
+
+    await act(async () => {
+      resolveFirstRequest({
+        items: seedItems,
+        syncedAt: new Date().toISOString(),
+      });
+      await firstSyncResult;
+    });
+
+    expect(result.current.isSyncing).toBe(true);
+
+    await act(async () => {
+      resolveSecondRequest({
+        items: seedItems,
+        syncedAt: new Date().toISOString(),
+      });
+      await secondSyncResult;
+    });
+
+    expect(result.current.isSyncing).toBe(false);
+  });
+
+  it('ошибка старого запроса не заменяет результат успешной новой синхронизации', async () => {
+    const { result } = renderHook(() => useInventory());
+
+    let rejectFirstRequest: (reason?: unknown) => void = () => {};
+    let resolveSecondRequest: (value: SyncResult) => void = () => {};
+    vi.mocked(syncPantry)
+      .mockImplementationOnce(() => {
+        return new Promise((_, reject) => {
+          rejectFirstRequest = reject;
+        });
+      })
+      .mockImplementationOnce(() => {
+        return new Promise((resolve) => {
+          resolveSecondRequest = resolve;
+        });
+      });
+    let firstSyncResult: Promise<void>;
+    let secondSyncResult: Promise<void>;
+
+    act(() => {
+      firstSyncResult = result.current.sync();
+      secondSyncResult = result.current.sync();
+    });
+
+    await act(async () => {
+      resolveSecondRequest({
+        items: seedItems,
+        syncedAt: new Date().toISOString(),
+      });
+      await secondSyncResult;
+    });
+
+    expect(result.current.syncError).toBe(null);
+
+    await act(async () => {
+      rejectFirstRequest(new Error('Ошибка старого запроса'));
+      await firstSyncResult;
+    });
+
+    expect(result.current.syncError).toBe(null);
+  });
 });

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { seedItems } from '../data/seed';
 import { removePantryItem, syncPantry } from '../services/pantryApi';
 import type { InventoryFilters, ItemDraft, PantryItem } from '../types';
@@ -21,6 +21,8 @@ export function useInventory() {
 
   const visibleItems = useMemo(() => getVisibleItems(items, filters), [items, filters]);
   const summary = useMemo(() => summarizeInventory(items), [items]);
+
+  const latestSyncRequestId = useRef(0);
 
   function addItem(draft: ItemDraft) {
     const item: PantryItem = {
@@ -76,9 +78,12 @@ export function useInventory() {
   }
 
   async function sync() {
+    latestSyncRequestId.current++;
+    const requestId = latestSyncRequestId.current;
     setIsSyncing(true);
     try {
       const result = await syncPantry(items);
+      if (requestId !== latestSyncRequestId.current) return;
       setItems((currentItems) =>
         currentItems.map((currentItem) => {
           const syncedItem = result.items.find((resultItem) => resultItem.id === currentItem.id);
@@ -89,9 +94,12 @@ export function useInventory() {
       setLastSyncedAt(result.syncedAt);
       setSyncError(null);
     } catch (error) {
+      if (requestId !== latestSyncRequestId.current) return;
       setSyncError(error instanceof Error ? error.message : 'Не удалось синхронизировать запасы');
     } finally {
-      setIsSyncing(false);
+      if (requestId === latestSyncRequestId.current) {
+        setIsSyncing(false);
+      }
     }
   }
 
