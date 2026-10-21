@@ -67,6 +67,7 @@ export function App() {
   return (
     <div className="app-shell">
       <Header
+        hasStorageError={inventory.hasStorageError}
         isSyncing={inventory.isSyncing}
         syncError={inventory.syncError}
         lastSyncedAt={inventory.lastSyncedAt}
@@ -74,7 +75,13 @@ export function App() {
         onImport={() => setImportOpen(true)}
         onSync={() => void inventory.sync()}
       />
-      <main>
+      <main className={inventory.hasStorageError ? 'main-with-storage-warning' : ''}>
+        {inventory.hasStorageError && (
+          <div className="storage-warning" role="status">
+            Не удалось сохранить изменения в браузере. Они могут быть потеряны после перезагрузки
+            страницы.
+          </div>
+        )}
         <div className="page-intro">
           <div>
             <p className="eyebrow">Домашние запасы</p>
