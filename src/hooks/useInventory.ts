@@ -13,7 +13,10 @@ const defaultFilters: InventoryFilters = {
 };
 
 export function useInventory() {
-  const [items, setItems] = useLocalStorage<PantryItem[]>('pantry-pilot:items', seedItems);
+  const [items, setItems, hasStorageError] = useLocalStorage<PantryItem[]>(
+    'pantry-pilot:items',
+    seedItems,
+  );
   const [filters, setFilters] = useState(defaultFilters);
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
@@ -115,6 +118,7 @@ export function useInventory() {
 
   return {
     items,
+    hasStorageError,
     visibleItems,
     summary,
     filters,

@@ -1,6 +1,7 @@
 import { Cloud, CloudOff, Plus } from 'lucide-react';
 
 interface HeaderProps {
+  hasStorageError: boolean;
   isSyncing: boolean;
   syncError: string | null;
   lastSyncedAt: string | null;
@@ -10,6 +11,7 @@ interface HeaderProps {
 }
 
 export function Header({
+  hasStorageError,
   isSyncing,
   syncError,
   lastSyncedAt,
@@ -30,16 +32,18 @@ export function Header({
       </div>
       <div className="header-actions">
         <div
-          className={`sync-status ${syncError ? 'has-error' : ''}`}
+          className={`sync-status ${syncError || hasStorageError ? 'has-error' : ''}`}
           title={syncError ?? undefined}
         >
-          {syncError ? <CloudOff size={16} /> : <Cloud size={16} />}
+          {syncError || hasStorageError ? <CloudOff size={16} /> : <Cloud size={16} />}
           <span>
             {syncError
               ? 'Ошибка синхронизации'
-              : lastSyncedAt
-                ? 'Только что синхронизировано'
-                : 'Сохранено на устройстве'}
+              : hasStorageError
+                ? 'Не сохранено на устройстве'
+                : lastSyncedAt
+                  ? 'Только что синхронизировано'
+                  : 'Сохранено на устройстве'}
           </span>
         </div>
         <button className="button button-ghost" onClick={onImport}>

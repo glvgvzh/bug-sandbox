@@ -151,6 +151,20 @@ main {
   margin: 0 auto;
   padding: 46px 0 80px;
 }
+main.main-with-storage-warning {
+  padding-top: 5px;
+}
+.storage-warning {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+  padding: 10px 16px;
+  background: var(--orange-soft);
+  color: var(--orange);
+  border-radius: 15px;
+  font-size: 13px;
+}
 .page-intro {
   display: flex;
   justify-content: space-between;

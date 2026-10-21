@@ -12,9 +12,18 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
     }
   });
 
+  const [hasStorageError, setStorageError] = useState(false);
+
   useEffect(() => {
-    window.localStorage.setItem(key, JSON.stringify(value));
+    let hasError = false;
+    try {
+      window.localStorage.setItem(key, JSON.stringify(value));
+    } catch {
+      hasError = true;
+    }
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Status depends on an external storage operation.
+    setStorageError(hasError);
   }, [key, value]);
 
-  return [value, setValue] as const;
+  return [value, setValue, hasStorageError] as const;
 }
