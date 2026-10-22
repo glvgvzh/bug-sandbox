@@ -11,7 +11,17 @@ export function parseInventoryCsv(source: string): ItemDraft[] {
 
   return rows.filter(Boolean).map((row, index) => {
     const [name, category, quantity, unit, lowStockAt, expiresAt] = row.split(',');
-    if (!name || !allowedCategories.includes(category) || !allowedUnits.includes(unit)) {
+    if (
+      !name ||
+      !allowedCategories.includes(category) ||
+      !allowedUnits.includes(unit) ||
+      !Number.isFinite(Number(quantity)) ||
+      Number(quantity) < 0 ||
+      !Number.isFinite(Number(lowStockAt)) ||
+      Number(lowStockAt) < 0 ||
+      quantity.trim() === '' ||
+      lowStockAt.trim() === ''
+    ) {
       throw new Error(`Некорректные данные в строке ${index + 2}`);
     }
     return {
