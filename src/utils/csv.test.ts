@@ -50,4 +50,88 @@ describe('parseInventoryCsv', () => {
       },
     ]);
   });
+
+  it('сообщает о строках с пустыми остатками и порогами малого запаса', () => {
+    expect(() =>
+      parseInventoryCsv(
+        'name,category,quantity,unit,lowStockAt,expiresAt\nПустой остаток,Canned,,pcs,2,2028-06-01',
+      ),
+    ).toThrow('Некорректные данные в строке 2');
+    expect(() =>
+      parseInventoryCsv(
+        'name,category,quantity,unit,lowStockAt,expiresAt\nПустой порог мин запаса,Canned,2,pcs,,2028-06-01',
+      ),
+    ).toThrow('Некорректные данные в строке 2');
+  });
+
+  it('сообщает о строках с бесконечными остатками и порогами малого запаса', () => {
+    expect(() =>
+      parseInventoryCsv(
+        'name,category,quantity,unit,lowStockAt,expiresAt\nБесконечный остаток,Canned,Infinity,pcs,2,2028-06-01',
+      ),
+    ).toThrow('Некорректные данные в строке 2');
+    expect(() =>
+      parseInventoryCsv(
+        'name,category,quantity,unit,lowStockAt,expiresAt\nБесконечный порог мин запаса,Canned,2,pcs,Infinity,2028-06-01',
+      ),
+    ).toThrow('Некорректные данные в строке 2');
+  });
+
+  it('сообщает о строках с текстовыми остатками и порогами малого запаса', () => {
+    expect(() =>
+      parseInventoryCsv(
+        'name,category,quantity,unit,lowStockAt,expiresAt\nТекстовый остаток,Canned,test,pcs,2,2028-06-01',
+      ),
+    ).toThrow('Некорректные данные в строке 2');
+    expect(() =>
+      parseInventoryCsv(
+        'name,category,quantity,unit,lowStockAt,expiresAt\nТекстовый порог мин запаса,Canned,2,pcs,test,2028-06-01',
+      ),
+    ).toThrow('Некорректные данные в строке 2');
+  });
+
+  it('сообщает о строках с отрицательными остатками и порогами малого запаса', () => {
+    expect(() =>
+      parseInventoryCsv(
+        'name,category,quantity,unit,lowStockAt,expiresAt\nОтрицательный остаток,Canned,-4,pcs,2,2028-06-01',
+      ),
+    ).toThrow('Некорректные данные в строке 2');
+    expect(() =>
+      parseInventoryCsv(
+        'name,category,quantity,unit,lowStockAt,expiresAt\nОтрицательный порог мин запаса,Canned,2,pcs,-4,2028-06-01',
+      ),
+    ).toThrow('Некорректные данные в строке 2');
+  });
+
+  it('корректно импортирует нули в остатке или пороге минимального запаса', () => {
+    const zeroQuantityResult = parseInventoryCsv(
+      'name,category,quantity,unit,lowStockAt,expiresAt\nЧечевица,Canned,0,pcs,2,2028-06-01',
+    );
+    expect(zeroQuantityResult).toEqual([
+      {
+        name: 'Чечевица',
+        category: 'Canned',
+        quantity: 0,
+        unit: 'pcs',
+        lowStockAt: 2,
+        expiresAt: '2028-06-01',
+        favorite: false,
+      },
+    ]);
+
+    const zeroLowStockAtResult = parseInventoryCsv(
+      'name,category,quantity,unit,lowStockAt,expiresAt\nЧечевица,Canned,2,pcs,0,2028-06-01',
+    );
+    expect(zeroLowStockAtResult).toEqual([
+      {
+        name: 'Чечевица',
+        category: 'Canned',
+        quantity: 2,
+        unit: 'pcs',
+        lowStockAt: 0,
+        expiresAt: '2028-06-01',
+        favorite: false,
+      },
+    ]);
+  });
 });
