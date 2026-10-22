@@ -4,7 +4,7 @@ const allowedCategories = ['Produce', 'Dairy', 'Grains', 'Canned', 'Snacks', 'Ot
 const allowedUnits = ['pcs', 'g', 'kg', 'ml', 'l'];
 
 export function parseInventoryCsv(source: string): ItemDraft[] {
-  const [header, ...rows] = source.trim().split('\n');
+  const [header, ...rows] = source.trim().split(/\n|\r\n/);
   if (header !== 'name,category,quantity,unit,lowStockAt,expiresAt') {
     throw new Error('Неподдерживаемый заголовок CSV');
   }
