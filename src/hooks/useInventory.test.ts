@@ -394,4 +394,48 @@ describe('useInventory', () => {
 
     expect(result.current.syncError).toBe(null);
   });
+
+  it('изменение одного быстро добавленного продукта не затрагивает другой', () => {
+    const firstItemDraft: ItemDraft = {
+      name: 'test1',
+      category: 'Other',
+      quantity: 1,
+      unit: 'kg',
+      lowStockAt: 1,
+      expiresAt: null,
+      favorite: false,
+    };
+    const secondItemDraft: ItemDraft = {
+      name: 'test2',
+      category: 'Other',
+      quantity: 1,
+      unit: 'pcs',
+      lowStockAt: 1,
+      expiresAt: null,
+      favorite: false,
+    };
+    const { result } = renderHook(() => useInventory());
+
+    act(() => {
+      result.current.addItem(firstItemDraft);
+      result.current.addItem(secondItemDraft);
+    });
+
+    const firstItemBefore = result.current.items.find((item) => item.name === firstItemDraft.name);
+    const secondItemBefore = result.current.items.find(
+      (item) => item.name === secondItemDraft.name,
+    );
+
+    expect(firstItemBefore?.id).not.toBe(secondItemBefore?.id);
+
+    act(() => {
+      result.current.toggleFavorite(firstItemBefore!.id);
+    });
+
+    const firstItemAfter = result.current.items.find((item) => item.name === firstItemDraft.name);
+    const secondItemAfter = result.current.items.find((item) => item.name === secondItemDraft.name);
+
+    expect(firstItemAfter?.favorite).toBe(true);
+    expect(secondItemAfter?.favorite).toBe(false);
+  });
 });
