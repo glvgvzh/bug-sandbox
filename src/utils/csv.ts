@@ -3,6 +3,32 @@ import type { ItemDraft } from '../types';
 const allowedCategories = ['Produce', 'Dairy', 'Grains', 'Canned', 'Snacks', 'Other'];
 const allowedUnits = ['pcs', 'g', 'kg', 'ml', 'l'];
 
+function parseCsvLine(line: string) {
+  const result = [];
+  let currentCell = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    if (char === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        currentCell += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (char === ',' && !inQuotes) {
+      result.push(currentCell);
+      currentCell = '';
+    } else {
+      currentCell += char;
+    }
+  }
+  result.push(currentCell);
+  if (inQuotes) return;
+  return result;
+}
+
 export function parseInventoryCsv(source: string): ItemDraft[] {
   const [header, ...rows] = source.trim().split(/\n|\r\n/);
   if (header !== 'name,category,quantity,unit,lowStockAt,expiresAt') {
@@ -10,7 +36,9 @@ export function parseInventoryCsv(source: string): ItemDraft[] {
   }
 
   return rows.filter(Boolean).map((row, index) => {
-    const [name, category, quantity, unit, lowStockAt, expiresAt] = row.split(',');
+    const parsedRow = parseCsvLine(row);
+    if (!parsedRow) throw new Error(`Некорректные данные в строке ${index + 2}`);
+    const [name, category, quantity, unit, lowStockAt, expiresAt] = parsedRow;
     if (
       !name ||
       !allowedCategories.includes(category) ||

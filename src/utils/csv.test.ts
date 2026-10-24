@@ -134,4 +134,46 @@ describe('parseInventoryCsv', () => {
       },
     ]);
   });
+
+  it('корректно импортирует запятые в названии', () => {
+    const result = parseInventoryCsv(
+      'name,category,quantity,unit,lowStockAt,expiresAt\n"Чечевица, красная",Canned,4,pcs,2,2028-06-01',
+    );
+    expect(result).toEqual([
+      {
+        name: 'Чечевица, красная',
+        category: 'Canned',
+        quantity: 4,
+        unit: 'pcs',
+        lowStockAt: 2,
+        expiresAt: '2028-06-01',
+        favorite: false,
+      },
+    ]);
+  });
+
+  it('корректно импортирует кавычки в названии', () => {
+    const result = parseInventoryCsv(
+      'name,category,quantity,unit,lowStockAt,expiresAt\n"""Чечевица""",Canned,4,pcs,2,2028-06-01',
+    );
+    expect(result).toEqual([
+      {
+        name: '"Чечевица"',
+        category: 'Canned',
+        quantity: 4,
+        unit: 'pcs',
+        lowStockAt: 2,
+        expiresAt: '2028-06-01',
+        favorite: false,
+      },
+    ]);
+  });
+
+  it('сообщает об ошибке, если в строке незакрытые кавычки', () => {
+    expect(() =>
+      parseInventoryCsv(
+        'name,category,quantity,unit,lowStockAt,expiresAt\nЧечевица,Canned,4,pcs,2,"2028-06-01',
+      ),
+    ).toThrow('Некорректные данные в строке 2');
+  });
 });
