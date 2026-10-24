@@ -30,7 +30,7 @@ export function useInventory() {
   function addItem(draft: ItemDraft) {
     const item: PantryItem = {
       ...draft,
-      id: `item-${Date.now()}`,
+      id: `item-${crypto.randomUUID()}`,
       updatedAt: new Date().toISOString(),
     };
     setItems((current) => [item, ...current]);
